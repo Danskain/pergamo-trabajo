@@ -4,8 +4,10 @@ namespace App\Modules\Accounting\Providers;
 
 use App\Modules\Accounting\Repositories\Contracts\AccountingStandardRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\ExerciseVariationRepositoryInterface;
+use App\Modules\Accounting\Repositories\Contracts\TypePlanRepositoryInterface;
 use App\Modules\Accounting\Repositories\EloquentAccountingStandardRepository;
 use App\Modules\Accounting\Repositories\EloquentExerciseVariationRepository;
+use App\Modules\Accounting\Repositories\EloquentTypePlanRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AccountingServiceProvider extends ServiceProvider
@@ -22,6 +24,11 @@ class AccountingServiceProvider extends ServiceProvider
         $this->app->bind(
             AccountingStandardRepositoryInterface::class,
             EloquentAccountingStandardRepository::class,
+        );
+
+        $this->app->bind(
+            TypePlanRepositoryInterface::class,
+            EloquentTypePlanRepository::class,
         );
     }
 
