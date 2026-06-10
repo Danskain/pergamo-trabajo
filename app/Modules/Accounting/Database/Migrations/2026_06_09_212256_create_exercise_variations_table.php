@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('exercise_variations', function (Blueprint $table) {
             $table->id();                              // id autoincrementable
+            $table->string('code')->nullable();        // varchar nullable
             $table->string('name')->nullable();        // varchar nullable
             $table->unsignedBigInteger('start_exercise'); // FK a months.id
             $table->unsignedBigInteger('end_exercise');   // FK a months.id

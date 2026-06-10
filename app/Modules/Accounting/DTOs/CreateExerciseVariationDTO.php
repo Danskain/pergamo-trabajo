@@ -7,6 +7,7 @@ use App\Modules\Accounting\Http\Requests\StoreExerciseVariationRequest;
 class CreateExerciseVariationDTO
 {
     public function __construct(
+        public readonly ?string $code,
         public readonly ?string $name,
         public readonly int $startExercise,
         public readonly int $endExercise,
@@ -20,6 +21,7 @@ class CreateExerciseVariationDTO
     public static function fromRequest(StoreExerciseVariationRequest $request): self
     {
         return new self(
+            code: $request->filled('code') ? $request->string('code')->toString() : null,
             name: $request->filled('name') ? $request->string('name')->toString() : null,
             startExercise: $request->integer('start_exercise'),
             endExercise: $request->integer('end_exercise'),

@@ -36,6 +36,7 @@ class EloquentExerciseVariationRepository implements ExerciseVariationRepository
     public function create(CreateExerciseVariationDTO $dto): ExerciseVariation
     {
         $exerciseVariation = ExerciseVariation::query()->create([
+            'code' => $dto->code,
             'name' => $dto->name,
             'start_exercise' => $dto->startExercise,
             'end_exercise' => $dto->endExercise,
@@ -51,6 +52,7 @@ class EloquentExerciseVariationRepository implements ExerciseVariationRepository
     public function update(ExerciseVariation $exerciseVariation, UpdateExerciseVariationDTO $dto): ExerciseVariation
     {
         $exerciseVariation->update([
+            'code' => $dto->code,
             'name' => $dto->name,
             'start_exercise' => $dto->startExercise,
             'end_exercise' => $dto->endExercise,

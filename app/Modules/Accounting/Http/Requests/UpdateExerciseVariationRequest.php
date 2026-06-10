@@ -17,6 +17,7 @@ class UpdateExerciseVariationRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'code' => ['nullable', 'string', 'max:255'],
             'name' => ['nullable', 'string', 'max:255'],
             'start_exercise' => ['required', 'integer', 'exists:months,id'],
             'end_exercise' => ['required', 'integer', 'exists:months,id'],

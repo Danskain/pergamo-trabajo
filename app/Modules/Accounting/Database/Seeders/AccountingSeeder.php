@@ -8,6 +8,9 @@ class AccountingSeeder extends Seeder
 {
     public function run(): void
     {
-        // Seed initial accounting catalog entries here when needed.
+        $this->call([
+            AccountingNatureSeeder::class,
+            AccountClassSeeder::class,
+        ]);
     }
 }

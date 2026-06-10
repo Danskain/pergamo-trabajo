@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Modules\Auth\Models\User;
+use App\Modules\Accounting\Database\Seeders\AccountingSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,13 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             MonthsSeeder::class,
-        ]);
-
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            AccountingSeeder::class,
         ]);
     }
 }

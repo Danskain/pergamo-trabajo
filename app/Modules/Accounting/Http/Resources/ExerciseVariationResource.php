@@ -14,6 +14,7 @@ class ExerciseVariationResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'code' => $this->code,
             'name' => $this->name,
             'start_exercise' => $this->start_exercise,
             'end_exercise' => $this->end_exercise,

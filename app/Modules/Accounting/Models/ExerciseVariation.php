@@ -17,6 +17,7 @@ class ExerciseVariation extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'code',
         'name',
         'start_exercise',
         'end_exercise',

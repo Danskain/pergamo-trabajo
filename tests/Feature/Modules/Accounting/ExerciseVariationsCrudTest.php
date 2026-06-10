@@ -16,10 +16,11 @@ class ExerciseVariationsCrudTest extends TestCase
         $this->seed(MonthsSeeder::class);
 
         foreach ([
-            ['name' => 'Ejercicio Enero - Diciembre', 'start_exercise' => 1, 'end_exercise' => 12],
-            ['name' => 'Ejercicio Febrero - Noviembre', 'start_exercise' => 2, 'end_exercise' => 11],
+            ['code' => 'EJ-ENE-DIC', 'name' => 'Ejercicio Enero - Diciembre', 'start_exercise' => 1, 'end_exercise' => 12],
+            ['code' => 'EJ-FEB-NOV', 'name' => 'Ejercicio Febrero - Noviembre', 'start_exercise' => 2, 'end_exercise' => 11],
         ] as $payload) {
             $createResponse = $this->postJson('/api/v1/accounting/exercise-variations', [
+                'code' => $payload['code'],
                 'name' => $payload['name'],
                 'start_exercise' => $payload['start_exercise'],
                 'end_exercise' => $payload['end_exercise'],
@@ -40,6 +41,7 @@ class ExerciseVariationsCrudTest extends TestCase
             ->assertOk()
             ->assertJsonPath('status', true)
             ->assertJsonPath('message', 'Variaciones de ejercicio obtenidas exitosamente')
+            ->assertJsonPath('data.data.0.code', 'EJ-ENE-DIC')
             ->assertJsonPath('data.data.0.name', 'Ejercicio Enero - Diciembre')
             ->assertJsonPath('data.meta.current_page', 1)
             ->assertJsonPath('data.meta.per_page', 1)
@@ -52,6 +54,7 @@ class ExerciseVariationsCrudTest extends TestCase
         $this->seed(MonthsSeeder::class);
 
         $id = DB::table('exercise_variations')->insertGetId([
+            'code' => 'TEMP',
             'name' => 'Temporal',
             'start_exercise' => 1,
             'end_exercise' => 6,
@@ -64,6 +67,7 @@ class ExerciseVariationsCrudTest extends TestCase
         ]);
 
         $updateResponse = $this->putJson("/api/v1/accounting/exercise-variations/{$id}", [
+            'code' => 'ACT-2026',
             'name' => 'Actualizado',
             'start_exercise' => 2,
             'end_exercise' => 11,
@@ -75,6 +79,7 @@ class ExerciseVariationsCrudTest extends TestCase
 
         $updateResponse
             ->assertOk()
+            ->assertJsonPath('data.code', 'ACT-2026')
             ->assertJsonPath('data.name', 'Actualizado')
             ->assertJsonPath('data.start_month.name', 'Febrero')
             ->assertJsonPath('data.end_month.name', 'Noviembre');
@@ -93,6 +98,7 @@ class ExerciseVariationsCrudTest extends TestCase
             ->assertOk()
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.id', $id)
+            ->assertJsonPath('data.code', 'ACT-2026')
             ->assertJsonPath('data.name', 'Actualizado');
 
         $this->assertDatabaseHas('exercise_variations', [
