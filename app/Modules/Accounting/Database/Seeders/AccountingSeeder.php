@@ -11,6 +11,8 @@ class AccountingSeeder extends Seeder
         $this->call([
             AccountingNatureSeeder::class,
             AccountClassSeeder::class,
+            FinancialStatementSeeder::class,
+            ReferenceSeeder::class,
         ]);
     }
 }

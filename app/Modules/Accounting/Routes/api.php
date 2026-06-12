@@ -2,11 +2,22 @@
 
 use App\Modules\Accounting\Http\Controllers\AccountingController;
 use App\Modules\Accounting\Http\Controllers\AccountingAccountController;
+use App\Modules\Accounting\Http\Controllers\AccountingDocumentController;
+use App\Modules\Accounting\Http\Controllers\AccountingEntryHeaderController;
 use App\Modules\Accounting\Http\Controllers\AccountingGroupController;
 use App\Modules\Accounting\Http\Controllers\AccountingStandardController;
 use App\Modules\Accounting\Http\Controllers\BusinessStructureController;
 use App\Modules\Accounting\Http\Controllers\ChartAccountController;
+use App\Modules\Accounting\Http\Controllers\CostCenterClassController;
+use App\Modules\Accounting\Http\Controllers\CostCenterController;
+use App\Modules\Accounting\Http\Controllers\CostCenterNatureController;
+use App\Modules\Accounting\Http\Controllers\CostCenterTypeController;
+use App\Modules\Accounting\Http\Controllers\DocumentSourceTypeController;
+use App\Modules\Accounting\Http\Controllers\DocumentSourceController;
 use App\Modules\Accounting\Http\Controllers\ExerciseVariationController;
+use App\Modules\Accounting\Http\Controllers\FinancialStatementController;
+use App\Modules\Accounting\Http\Controllers\ModuleController;
+use App\Modules\Accounting\Http\Controllers\ReferenceController;
 use App\Modules\Accounting\Http\Controllers\TypeAccountController;
 use App\Modules\Accounting\Http\Controllers\TypePlanController;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +27,27 @@ Route::prefix(config('accounting.route_prefix', 'api/accounting'))
     ->name('accounting.')
     ->group(function (): void {
         Route::get('health', [AccountingController::class, 'health'])->name('health');
+        Route::get('accounting-documents', [AccountingDocumentController::class, 'index'])->name('accounting-documents.index');
+        Route::post('accounting-documents', [AccountingDocumentController::class, 'store'])->name('accounting-documents.store');
+        Route::get('accounting-documents/{accountingDocument}', [AccountingDocumentController::class, 'show'])->name('accounting-documents.show');
+        Route::put('accounting-documents/{accountingDocument}', [AccountingDocumentController::class, 'update'])->name('accounting-documents.update');
+        Route::delete('accounting-documents/{accountingDocument}', [AccountingDocumentController::class, 'destroy'])->name('accounting-documents.destroy');
+        Route::post('accounting-documents/{accountingDocument}/restore', [AccountingDocumentController::class, 'restore'])->name('accounting-documents.restore');
+        
+        Route::get('accounting-entry-headers', [AccountingEntryHeaderController::class, 'index'])->name('accounting-entry-headers.index');
+        Route::post('accounting-entry-headers', [AccountingEntryHeaderController::class, 'store'])->name('accounting-entry-headers.store');
+        Route::get('accounting-entry-headers/{accountingEntryHeader}', [AccountingEntryHeaderController::class, 'show'])->name('accounting-entry-headers.show');
+        Route::put('accounting-entry-headers/{accountingEntryHeader}', [AccountingEntryHeaderController::class, 'update'])->name('accounting-entry-headers.update');
+        Route::delete('accounting-entry-headers/{accountingEntryHeader}', [AccountingEntryHeaderController::class, 'destroy'])->name('accounting-entry-headers.destroy');
+        Route::post('accounting-entry-headers/{accountingEntryHeader}/restore', [AccountingEntryHeaderController::class, 'restore'])->name('accounting-entry-headers.restore');
+
+        Route::get('documents-source', [DocumentSourceController::class, 'index'])->name('documents-source.index');
+        Route::post('documents-source', [DocumentSourceController::class, 'store'])->name('documents-source.store');
+        Route::get('documents-source/{documentSource}', [DocumentSourceController::class, 'show'])->name('documents-source.show');
+        Route::put('documents-source/{documentSource}', [DocumentSourceController::class, 'update'])->name('documents-source.update');
+        Route::delete('documents-source/{documentSource}', [DocumentSourceController::class, 'destroy'])->name('documents-source.destroy');
+        Route::post('documents-source/{documentSource}/restore', [DocumentSourceController::class, 'restore'])->name('documents-source.restore');
+        
         Route::get('exercise-variations', [ExerciseVariationController::class, 'index'])->name('exercise-variations.index');
         Route::post('exercise-variations', [ExerciseVariationController::class, 'store'])->name('exercise-variations.store');
         Route::get('exercise-variations/{exerciseVariation}', [ExerciseVariationController::class, 'show'])->name('exercise-variations.show');
@@ -57,6 +89,34 @@ Route::prefix(config('accounting.route_prefix', 'api/accounting'))
         Route::put('chart-accounts/{chartAccount}', [ChartAccountController::class, 'update'])->name('chart-accounts.update');
         Route::delete('chart-accounts/{chartAccount}', [ChartAccountController::class, 'destroy'])->name('chart-accounts.destroy');
         Route::post('chart-accounts/{chartAccount}/restore', [ChartAccountController::class, 'restore'])->name('chart-accounts.restore');
+        
+        Route::get('cost-center-classes', [CostCenterClassController::class, 'index'])->name('cost-center-classes.index');
+        Route::post('cost-center-classes', [CostCenterClassController::class, 'store'])->name('cost-center-classes.store');
+        Route::get('cost-center-classes/{costCenterClass}', [CostCenterClassController::class, 'show'])->name('cost-center-classes.show');
+        Route::put('cost-center-classes/{costCenterClass}', [CostCenterClassController::class, 'update'])->name('cost-center-classes.update');
+        Route::delete('cost-center-classes/{costCenterClass}', [CostCenterClassController::class, 'destroy'])->name('cost-center-classes.destroy');
+        Route::post('cost-center-classes/{costCenterClass}/restore', [CostCenterClassController::class, 'restore'])->name('cost-center-classes.restore');
+
+        Route::get('cost-centers', [CostCenterController::class, 'index'])->name('cost-centers.index');
+        Route::post('cost-centers', [CostCenterController::class, 'store'])->name('cost-centers.store');
+        Route::get('cost-centers/{costCenter}', [CostCenterController::class, 'show'])->name('cost-centers.show');
+        Route::put('cost-centers/{costCenter}', [CostCenterController::class, 'update'])->name('cost-centers.update');
+        Route::delete('cost-centers/{costCenter}', [CostCenterController::class, 'destroy'])->name('cost-centers.destroy');
+        Route::post('cost-centers/{costCenter}/restore', [CostCenterController::class, 'restore'])->name('cost-centers.restore');
+
+        Route::get('cost-center-natures', [CostCenterNatureController::class, 'index'])->name('cost-center-natures.index');
+        Route::post('cost-center-natures', [CostCenterNatureController::class, 'store'])->name('cost-center-natures.store');
+        Route::get('cost-center-natures/{costCenterNature}', [CostCenterNatureController::class, 'show'])->name('cost-center-natures.show');
+        Route::put('cost-center-natures/{costCenterNature}', [CostCenterNatureController::class, 'update'])->name('cost-center-natures.update');
+        Route::delete('cost-center-natures/{costCenterNature}', [CostCenterNatureController::class, 'destroy'])->name('cost-center-natures.destroy');
+        Route::post('cost-center-natures/{costCenterNature}/restore', [CostCenterNatureController::class, 'restore'])->name('cost-center-natures.restore');
+        
+        Route::get('cost-center-types', [CostCenterTypeController::class, 'index'])->name('cost-center-types.index');
+        Route::post('cost-center-types', [CostCenterTypeController::class, 'store'])->name('cost-center-types.store');
+        Route::get('cost-center-types/{costCenterType}', [CostCenterTypeController::class, 'show'])->name('cost-center-types.show');
+        Route::put('cost-center-types/{costCenterType}', [CostCenterTypeController::class, 'update'])->name('cost-center-types.update');
+        Route::delete('cost-center-types/{costCenterType}', [CostCenterTypeController::class, 'destroy'])->name('cost-center-types.destroy');
+        Route::post('cost-center-types/{costCenterType}/restore', [CostCenterTypeController::class, 'restore'])->name('cost-center-types.restore');
 
         Route::get('accounting-accounts', [AccountingAccountController::class, 'index'])->name('accounting-accounts.index');
         Route::post('accounting-accounts', [AccountingAccountController::class, 'store'])->name('accounting-accounts.store');
@@ -71,4 +131,32 @@ Route::prefix(config('accounting.route_prefix', 'api/accounting'))
         Route::put('business-structures/{businessStructure}', [BusinessStructureController::class, 'update'])->name('business-structures.update');
         Route::delete('business-structures/{businessStructure}', [BusinessStructureController::class, 'destroy'])->name('business-structures.destroy');
         Route::post('business-structures/{businessStructure}/restore', [BusinessStructureController::class, 'restore'])->name('business-structures.restore');
+
+        Route::get('modules', [ModuleController::class, 'index'])->name('modules.index');
+        Route::post('modules', [ModuleController::class, 'store'])->name('modules.store');
+        Route::get('modules/{module}', [ModuleController::class, 'show'])->name('modules.show');
+        Route::put('modules/{module}', [ModuleController::class, 'update'])->name('modules.update');
+        Route::delete('modules/{module}', [ModuleController::class, 'destroy'])->name('modules.destroy');
+        Route::post('modules/{module}/restore', [ModuleController::class, 'restore'])->name('modules.restore');
+
+        Route::get('document-source-types', [DocumentSourceTypeController::class, 'index'])->name('document-source-types.index');
+        Route::post('document-source-types', [DocumentSourceTypeController::class, 'store'])->name('document-source-types.store');
+        Route::get('document-source-types/{documentSourceType}', [DocumentSourceTypeController::class, 'show'])->name('document-source-types.show');
+        Route::put('document-source-types/{documentSourceType}', [DocumentSourceTypeController::class, 'update'])->name('document-source-types.update');
+        Route::delete('document-source-types/{documentSourceType}', [DocumentSourceTypeController::class, 'destroy'])->name('document-source-types.destroy');
+        Route::post('document-source-types/{documentSourceType}/restore', [DocumentSourceTypeController::class, 'restore'])->name('document-source-types.restore');
+
+        Route::get('financial-statements', [FinancialStatementController::class, 'index'])->name('financial-statements.index');
+        Route::post('financial-statements', [FinancialStatementController::class, 'store'])->name('financial-statements.store');
+        Route::get('financial-statements/{financialStatement}', [FinancialStatementController::class, 'show'])->name('financial-statements.show');
+        Route::put('financial-statements/{financialStatement}', [FinancialStatementController::class, 'update'])->name('financial-statements.update');
+        Route::delete('financial-statements/{financialStatement}', [FinancialStatementController::class, 'destroy'])->name('financial-statements.destroy');
+        Route::post('financial-statements/{financialStatement}/restore', [FinancialStatementController::class, 'restore'])->name('financial-statements.restore');
+
+        Route::get('references', [ReferenceController::class, 'index'])->name('references.index');
+        Route::post('references', [ReferenceController::class, 'store'])->name('references.store');
+        Route::get('references/{reference}', [ReferenceController::class, 'show'])->name('references.show');
+        Route::put('references/{reference}', [ReferenceController::class, 'update'])->name('references.update');
+        Route::delete('references/{reference}', [ReferenceController::class, 'destroy'])->name('references.destroy');
+        Route::post('references/{reference}/restore', [ReferenceController::class, 'restore'])->name('references.restore');
     });
