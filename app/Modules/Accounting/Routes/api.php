@@ -4,6 +4,7 @@ use App\Modules\Accounting\Http\Controllers\AccountingController;
 use App\Modules\Accounting\Http\Controllers\AccountingAccountController;
 use App\Modules\Accounting\Http\Controllers\AccountingDocumentController;
 use App\Modules\Accounting\Http\Controllers\AccountingEntryHeaderController;
+use App\Modules\Accounting\Http\Controllers\AccountingEntryPositionController;
 use App\Modules\Accounting\Http\Controllers\AccountingGroupController;
 use App\Modules\Accounting\Http\Controllers\AccountingStandardController;
 use App\Modules\Accounting\Http\Controllers\BusinessStructureController;
@@ -40,6 +41,13 @@ Route::prefix(config('accounting.route_prefix', 'api/accounting'))
         Route::put('accounting-entry-headers/{accountingEntryHeader}', [AccountingEntryHeaderController::class, 'update'])->name('accounting-entry-headers.update');
         Route::delete('accounting-entry-headers/{accountingEntryHeader}', [AccountingEntryHeaderController::class, 'destroy'])->name('accounting-entry-headers.destroy');
         Route::post('accounting-entry-headers/{accountingEntryHeader}/restore', [AccountingEntryHeaderController::class, 'restore'])->name('accounting-entry-headers.restore');
+
+        Route::get('accounting-entry-positions', [AccountingEntryPositionController::class, 'index'])->name('accounting-entry-positions.index');
+        Route::post('accounting-entry-positions', [AccountingEntryPositionController::class, 'store'])->name('accounting-entry-positions.store');
+        Route::get('accounting-entry-positions/{accountingEntryPosition}', [AccountingEntryPositionController::class, 'show'])->name('accounting-entry-positions.show');
+        Route::put('accounting-entry-positions/{accountingEntryPosition}', [AccountingEntryPositionController::class, 'update'])->name('accounting-entry-positions.update');
+        Route::delete('accounting-entry-positions/{accountingEntryPosition}', [AccountingEntryPositionController::class, 'destroy'])->name('accounting-entry-positions.destroy');
+        Route::post('accounting-entry-positions/{accountingEntryPosition}/restore', [AccountingEntryPositionController::class, 'restore'])->name('accounting-entry-positions.restore');
 
         Route::get('documents-source', [DocumentSourceController::class, 'index'])->name('documents-source.index');
         Route::post('documents-source', [DocumentSourceController::class, 'store'])->name('documents-source.store');

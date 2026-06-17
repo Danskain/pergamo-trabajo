@@ -5,6 +5,7 @@ namespace App\Modules\Accounting\Providers;
 use App\Modules\Accounting\Repositories\Contracts\AccountingStandardRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\AccountingDocumentRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\AccountingEntryHeaderRepositoryInterface;
+use App\Modules\Accounting\Repositories\Contracts\AccountingEntryPositionRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\AccountingAccountRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\AccountingGroupRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\BusinessStructureRepositoryInterface;
@@ -24,6 +25,7 @@ use App\Modules\Accounting\Repositories\Contracts\TypePlanRepositoryInterface;
 use App\Modules\Accounting\Repositories\EloquentAccountingStandardRepository;
 use App\Modules\Accounting\Repositories\EloquentAccountingDocumentRepository;
 use App\Modules\Accounting\Repositories\EloquentAccountingEntryHeaderRepository;
+use App\Modules\Accounting\Repositories\EloquentAccountingEntryPositionRepository;
 use App\Modules\Accounting\Repositories\EloquentAccountingAccountRepository;
 use App\Modules\Accounting\Repositories\EloquentAccountingGroupRepository;
 use App\Modules\Accounting\Repositories\EloquentBusinessStructureRepository;
@@ -66,6 +68,11 @@ class AccountingServiceProvider extends ServiceProvider
         $this->app->bind(
             AccountingEntryHeaderRepositoryInterface::class,
             EloquentAccountingEntryHeaderRepository::class,
+        );
+
+        $this->app->bind(
+            AccountingEntryPositionRepositoryInterface::class,
+            EloquentAccountingEntryPositionRepository::class,
         );
 
         $this->app->bind(
