@@ -1,0 +1,373 @@
+<?php
+
+namespace Tests\Feature\Modules\Accounting;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
+
+class AccountingSelectOptionsTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_it_returns_select_options_for_a_supported_catalog(): void
+    {
+        DB::table('cost_center_type')->insert([
+            [
+                'name' => 'Administrativo',
+                'code' => 'ADM',
+                'description' => 'Tipo administrativo',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Operativo',
+                'code' => 'OPE',
+                'description' => 'Tipo operativo',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $response = $this->getJson('/api/v1/accounting/select-options/cost_center_type?search=ADM&limit=10');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('message', 'Select options retrieved successfully.')
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('meta.catalogs.0', 'cost_center_type')
+            ->assertJsonPath('meta.enriched_labels', false)
+            ->assertJsonPath('data.0.label', 'ADM - Administrativo')
+            ->assertJsonPath('data.0.meta.code', 'ADM')
+            ->assertJsonPath('data.0.meta.name', 'Administrativo');
+    }
+
+    public function test_it_returns_multiple_catalogs_in_a_single_request(): void
+    {
+        DB::table('cost_center_type')->insert([
+            'name' => 'Administrativo',
+            'code' => 'ADM',
+            'description' => 'Tipo administrativo',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('cost_center_class')->insert([
+            'name' => 'Clase General',
+            'code' => 'CLS',
+            'description' => 'Clase de prueba',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $countryId = DB::table('country')->insertGetId([
+            'name' => 'Colombia',
+            'status_id' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $coinId = DB::table('coins')->insertGetId([
+            'name' => 'Peso Colombiano',
+            'alphabetic_code' => 'COP',
+            'numeric_code' => 170,
+            'subunit' => 'Centavo',
+            'subunit_ratio' => 100,
+            'decimal_digits' => 2,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $businessGroupId = DB::table('business_group')->insertGetId([
+            'code' => 1,
+            'name' => 'Grupo 1',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $enterpriseId = DB::table('enterprises')->insertGetId([
+            'name' => 'Pergamo SAS',
+            'business_group_id' => $businessGroupId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $campusId = DB::table('campus')->insertGetId([
+            'name' => 'Sede Norte',
+            'address' => 'Calle 1',
+            'enable_code' => 'SED-N',
+            'status_id' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountingNatureId = DB::table('accounting_nature')->insertGetId([
+            'name' => 'Debito',
+            'code' => 'D',
+            'description' => 'Naturaleza debito',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('account_class')->insert([
+            'name' => 'Activo',
+            'accounting_nature_id' => $accountingNatureId,
+            'description' => 'Clase contable de activo',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $response = $this->getJson('/api/v1/accounting/select-options?catalogs=cost_center_type,cost_center_class,account_class,country,coins,enterprises,campus');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.catalogs.0', 'cost_center_type')
+            ->assertJsonPath('meta.catalogs.1', 'cost_center_class')
+            ->assertJsonPath('meta.catalogs.2', 'account_class')
+            ->assertJsonPath('meta.catalogs.3', 'country')
+            ->assertJsonPath('meta.catalogs.4', 'coins')
+            ->assertJsonPath('meta.catalogs.5', 'enterprises')
+            ->assertJsonPath('meta.catalogs.6', 'campus')
+            ->assertJsonPath('data.cost_center_type.0.label', 'ADM - Administrativo')
+            ->assertJsonPath('data.cost_center_class.0.label', 'CLS - Clase General')
+            ->assertJsonPath('data.account_class.0.label', 'Activo')
+            ->assertJsonPath('data.account_class.0.meta.accounting_nature_id', $accountingNatureId)
+            ->assertJsonPath('data.country.0.value', $countryId)
+            ->assertJsonPath('data.country.0.label', 'Colombia')
+            ->assertJsonPath('data.coins.0.value', $coinId)
+            ->assertJsonPath('data.coins.0.label', 'COP - Peso Colombiano')
+            ->assertJsonPath('data.enterprises.0.value', $enterpriseId)
+            ->assertJsonPath('data.enterprises.0.label', 'Pergamo SAS')
+            ->assertJsonPath('data.campus.0.value', $campusId)
+            ->assertJsonPath('data.campus.0.label', 'SED-N - Sede Norte');
+    }
+
+    public function test_it_can_return_enriched_labels_when_requested(): void
+    {
+        $this->createBusinessStructureDependencies();
+        $documentSourceId = $this->createDocumentSourceDependencies();
+        $accountingNatureId = DB::table('accounting_nature')->insertGetId([
+            'name' => 'Debito',
+            'code' => 'D',
+            'description' => 'Naturaleza debito',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountClassId = DB::table('account_class')->insertGetId([
+            'name' => 'Activo',
+            'accounting_nature_id' => $accountingNatureId,
+            'description' => 'Clase contable de activo',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $businessStructureResponse = $this->getJson('/api/v1/accounting/select-options/business_structure?enriched_labels=true');
+
+        $businessStructureResponse
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.enriched_labels', true)
+            ->assertJsonPath('data.0.label', 'Pergamo SAS - Colombia - COP - Anual');
+
+        $documentSourceResponse = $this->getJson('/api/v1/accounting/select-options/documents_source?enriched_labels=true');
+
+        $documentSourceResponse
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.0.value', $documentSourceId)
+            ->assertJsonPath('data.0.label', 'FV - 000123 - Factura - 2026');
+
+        $accountClassResponse = $this->getJson('/api/v1/accounting/select-options/account_class?enriched_labels=true');
+
+        $accountClassResponse
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.0.value', $accountClassId)
+            ->assertJsonPath('data.0.label', 'Activo - D - Debito');
+    }
+
+    public function test_it_validates_catalog_against_allowed_configuration(): void
+    {
+        $response = $this->getJson('/api/v1/accounting/select-options/not-allowed');
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'Validation failed.')
+            ->assertJsonPath('errors.catalog.0', 'The selected catalog is invalid.');
+    }
+
+    private function createBusinessStructureDependencies(): int
+    {
+        $countryId = DB::table('country')->insertGetId([
+            'name' => 'Colombia',
+            'status_id' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $coinId = DB::table('coins')->insertGetId([
+            'name' => 'Peso Colombiano',
+            'alphabetic_code' => 'COP',
+            'numeric_code' => 170,
+            'subunit' => 'Centavo',
+            'subunit_ratio' => 100,
+            'decimal_digits' => 2,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $businessGroupId = DB::table('business_group')->insertGetId([
+            'code' => 1,
+            'name' => 'Grupo 1',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $enterpriseId = DB::table('enterprises')->insertGetId([
+            'name' => 'Pergamo SAS',
+            'business_group_id' => $businessGroupId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $monthStartId = DB::table('months')->insertGetId([
+            'name' => 'Enero',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $monthEndId = DB::table('months')->insertGetId([
+            'name' => 'Diciembre',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $exerciseVariationId = DB::table('exercise_variations')->insertGetId([
+            'code' => 'AN',
+            'name' => 'Anual',
+            'start_exercise' => $monthStartId,
+            'end_exercise' => $monthEndId,
+            'normal_periods' => 12,
+            'special_periods' => 0,
+            'calendar_dependent' => true,
+            'description' => 'Ejercicio anual',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountingStandardId = DB::table('accounting_standard')->insertGetId([
+            'name' => 'NIIF',
+            'code' => 'NIIF',
+            'description' => 'Norma base',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $typePlanId = DB::table('types_plans')->insertGetId([
+            'name' => 'General',
+            'code' => 'GEN',
+            'description' => 'Plan general',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $chartAccountId = DB::table('chart_accounts')->insertGetId([
+            'code' => '1105',
+            'name' => 'Caja',
+            'description' => 'Caja general',
+            'accounting_standard_id' => $accountingStandardId,
+            'types_plan_id' => $typePlanId,
+            'ceco_permission' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return DB::table('business_structure')->insertGetId([
+            'country_id' => $countryId,
+            'coin_id' => $coinId,
+            'enterprise_id' => $enterpriseId,
+            'exercise_variation_id' => $exerciseVariationId,
+            'chart_account_id' => $chartAccountId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    private function createDocumentSourceDependencies(): int
+    {
+        $businessStructureId = $this->createBusinessStructureDependencies();
+
+        $moduleId = DB::table('modules')->insertGetId([
+            'name' => 'Facturacion',
+            'code' => 'FAC',
+            'description' => 'Modulo de facturacion',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $documentSourceTypeId = DB::table('document_source_type')->insertGetId([
+            'name' => 'Factura Venta',
+            'code' => 'FV',
+            'description' => 'Documento de venta',
+            'generates_accounting' => true,
+            'manual_entry' => true,
+            'requires_approval' => false,
+            'requires_third' => false,
+            'requires_ceco' => false,
+            'affects_inventory' => false,
+            'affects_cartera' => true,
+            'affects_cxp' => false,
+            'affects_treasury' => true,
+            'allows_reversal' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $referenceId = DB::table('reference')->insertGetId([
+            'name' => 'Factura',
+            'code' => 'FAC',
+            'description' => 'Referencia factura',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $financialStatementId = DB::table('financial_statements')->insertGetId([
+            'name' => 'Pendiente',
+            'code' => 'P',
+            'description' => 'Estado pendiente',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountingDocumentId = DB::table('accounting_document')->insertGetId([
+            'name' => 'Comprobante',
+            'code' => 'COMP',
+            'description' => 'Documento contable',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $coinId = DB::table('coins')->value('id');
+
+        return DB::table('documents_source')->insertGetId([
+            'business_structure_id' => $businessStructureId,
+            'modules_id' => $moduleId,
+            'document_source_type_id' => $documentSourceTypeId,
+            'number_document_source' => '000123',
+            'document_date' => now(),
+            'accounting_date' => now(),
+            'reference_id' => $referenceId,
+            'total_value' => 1500.25,
+            'coin_id' => $coinId,
+            'financial_statement_id' => $financialStatementId,
+            'accounting_document_id' => $accountingDocumentId,
+            'exercise' => '2026',
+            'description' => 'Documento fuente de prueba',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+}

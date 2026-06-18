@@ -19,6 +19,25 @@ class BusinessStructureResource extends JsonResource
             'enterprise_id' => $this->enterprise_id,
             'exercise_variation_id' => $this->exercise_variation_id,
             'chart_account_id' => $this->chart_account_id,
+            'country' => $this->whenLoaded('country', function (): array {
+                return [
+                    'id' => $this->country->id,
+                    'name' => $this->country->name,
+                ];
+            }),
+            'coin' => $this->whenLoaded('coin', function (): array {
+                return [
+                    'id' => $this->coin->id,
+                    'name' => $this->coin->name,
+                    'alphabetic_code' => $this->coin->alphabetic_code,
+                ];
+            }),
+            'enterprise' => $this->whenLoaded('enterprise', function (): array {
+                return [
+                    'id' => $this->enterprise->id,
+                    'name' => $this->enterprise->name,
+                ];
+            }),
             'exercise_variation' => $this->whenLoaded('exerciseVariation', function (): array {
                 return [
                     'id' => $this->exerciseVariation->id,

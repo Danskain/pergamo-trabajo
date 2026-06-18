@@ -28,6 +28,21 @@ class BusinessStructure extends Model
         return $this->belongsTo(ExerciseVariation::class, 'exercise_variation_id');
     }
 
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    public function coin(): BelongsTo
+    {
+        return $this->belongsTo(Coin::class, 'coin_id');
+    }
+
+    public function enterprise(): BelongsTo
+    {
+        return $this->belongsTo(Enterprise::class, 'enterprise_id');
+    }
+
     public function chartAccount(): BelongsTo
     {
         return $this->belongsTo(ChartAccount::class, 'chart_account_id');

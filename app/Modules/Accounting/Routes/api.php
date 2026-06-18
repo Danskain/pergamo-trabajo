@@ -2,6 +2,8 @@
 
 use App\Modules\Accounting\Http\Controllers\AccountingController;
 use App\Modules\Accounting\Http\Controllers\AccountingAccountController;
+use App\Modules\Accounting\Http\Controllers\AccountingNatureController;
+use App\Modules\Accounting\Http\Controllers\AccountClassController;
 use App\Modules\Accounting\Http\Controllers\AccountingDocumentController;
 use App\Modules\Accounting\Http\Controllers\AccountingEntryHeaderController;
 use App\Modules\Accounting\Http\Controllers\AccountingEntryPositionController;
@@ -28,6 +30,8 @@ Route::prefix(config('accounting.route_prefix', 'api/accounting'))
     ->name('accounting.')
     ->group(function (): void {
         Route::get('health', [AccountingController::class, 'health'])->name('health');
+        Route::get('select-options/{catalog?}', [AccountingController::class, 'selectOptions'])->name('select-options');
+        
         Route::get('accounting-documents', [AccountingDocumentController::class, 'index'])->name('accounting-documents.index');
         Route::post('accounting-documents', [AccountingDocumentController::class, 'store'])->name('accounting-documents.store');
         Route::get('accounting-documents/{accountingDocument}', [AccountingDocumentController::class, 'show'])->name('accounting-documents.show');
@@ -69,6 +73,20 @@ Route::prefix(config('accounting.route_prefix', 'api/accounting'))
         Route::put('accounting-standards/{accountingStandard}', [AccountingStandardController::class, 'update'])->name('accounting-standards.update');
         Route::delete('accounting-standards/{accountingStandard}', [AccountingStandardController::class, 'destroy'])->name('accounting-standards.destroy');
         Route::post('accounting-standards/{accountingStandard}/restore', [AccountingStandardController::class, 'restore'])->name('accounting-standards.restore');
+
+        Route::get('accounting-natures', [AccountingNatureController::class, 'index'])->name('accounting-natures.index');
+        Route::post('accounting-natures', [AccountingNatureController::class, 'store'])->name('accounting-natures.store');
+        Route::get('accounting-natures/{accountingNature}', [AccountingNatureController::class, 'show'])->name('accounting-natures.show');
+        Route::put('accounting-natures/{accountingNature}', [AccountingNatureController::class, 'update'])->name('accounting-natures.update');
+        Route::delete('accounting-natures/{accountingNature}', [AccountingNatureController::class, 'destroy'])->name('accounting-natures.destroy');
+        Route::post('accounting-natures/{accountingNature}/restore', [AccountingNatureController::class, 'restore'])->name('accounting-natures.restore');
+
+        Route::get('account-classes', [AccountClassController::class, 'index'])->name('account-classes.index');
+        Route::post('account-classes', [AccountClassController::class, 'store'])->name('account-classes.store');
+        Route::get('account-classes/{accountClass}', [AccountClassController::class, 'show'])->name('account-classes.show');
+        Route::put('account-classes/{accountClass}', [AccountClassController::class, 'update'])->name('account-classes.update');
+        Route::delete('account-classes/{accountClass}', [AccountClassController::class, 'destroy'])->name('account-classes.destroy');
+        Route::post('account-classes/{accountClass}/restore', [AccountClassController::class, 'restore'])->name('account-classes.restore');
 
         Route::get('accounting-groups', [AccountingGroupController::class, 'index'])->name('accounting-groups.index');
         Route::post('accounting-groups', [AccountingGroupController::class, 'store'])->name('accounting-groups.store');

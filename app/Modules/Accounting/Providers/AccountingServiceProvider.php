@@ -2,6 +2,8 @@
 
 namespace App\Modules\Accounting\Providers;
 
+use App\Modules\Accounting\Repositories\Contracts\AccountingNatureRepositoryInterface;
+use App\Modules\Accounting\Repositories\Contracts\AccountClassRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\AccountingStandardRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\AccountingDocumentRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\AccountingEntryHeaderRepositoryInterface;
@@ -20,8 +22,11 @@ use App\Modules\Accounting\Repositories\Contracts\ExerciseVariationRepositoryInt
 use App\Modules\Accounting\Repositories\Contracts\FinancialStatementRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\ModuleRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\ReferenceRepositoryInterface;
+use App\Modules\Accounting\Repositories\Contracts\SelectOptionRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\TypeAccountRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\TypePlanRepositoryInterface;
+use App\Modules\Accounting\Repositories\EloquentAccountingNatureRepository;
+use App\Modules\Accounting\Repositories\EloquentAccountClassRepository;
 use App\Modules\Accounting\Repositories\EloquentAccountingStandardRepository;
 use App\Modules\Accounting\Repositories\EloquentAccountingDocumentRepository;
 use App\Modules\Accounting\Repositories\EloquentAccountingEntryHeaderRepository;
@@ -40,6 +45,7 @@ use App\Modules\Accounting\Repositories\EloquentExerciseVariationRepository;
 use App\Modules\Accounting\Repositories\EloquentFinancialStatementRepository;
 use App\Modules\Accounting\Repositories\EloquentModuleRepository;
 use App\Modules\Accounting\Repositories\EloquentReferenceRepository;
+use App\Modules\Accounting\Repositories\EloquentSelectOptionRepository;
 use App\Modules\Accounting\Repositories\EloquentTypeAccountRepository;
 use App\Modules\Accounting\Repositories\EloquentTypePlanRepository;
 use Illuminate\Support\ServiceProvider;
@@ -49,6 +55,16 @@ class AccountingServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../Config/accounting.php', 'accounting');
+
+        $this->app->bind(
+            AccountingNatureRepositoryInterface::class,
+            EloquentAccountingNatureRepository::class,
+        );
+
+        $this->app->bind(
+            AccountClassRepositoryInterface::class,
+            EloquentAccountClassRepository::class,
+        );
 
         $this->app->bind(
             ExerciseVariationRepositoryInterface::class,
@@ -148,6 +164,11 @@ class AccountingServiceProvider extends ServiceProvider
         $this->app->bind(
             ReferenceRepositoryInterface::class,
             EloquentReferenceRepository::class,
+        );
+
+        $this->app->bind(
+            SelectOptionRepositoryInterface::class,
+            EloquentSelectOptionRepository::class,
         );
     }
 

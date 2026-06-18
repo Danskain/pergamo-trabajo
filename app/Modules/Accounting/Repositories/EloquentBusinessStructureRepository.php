@@ -10,10 +10,21 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class EloquentBusinessStructureRepository implements BusinessStructureRepositoryInterface
 {
+    /**
+     * @var array<int, string>
+     */
+    protected array $with = [
+        'country',
+        'coin',
+        'enterprise',
+        'exerciseVariation',
+        'chartAccount',
+    ];
+
     public function paginate(int $perPage = 15, int $page = 1): LengthAwarePaginator
     {
         return BusinessStructure::query()
-            ->with(['exerciseVariation', 'chartAccount'])
+            ->with($this->with)
             ->orderBy('id')
             ->paginate($perPage, ['*'], 'page', $page);
     }
@@ -21,7 +32,7 @@ class EloquentBusinessStructureRepository implements BusinessStructureRepository
     public function findOrFail(int $id): BusinessStructure
     {
         return BusinessStructure::query()
-            ->with(['exerciseVariation', 'chartAccount'])
+            ->with($this->with)
             ->findOrFail($id);
     }
 
@@ -29,7 +40,7 @@ class EloquentBusinessStructureRepository implements BusinessStructureRepository
     {
         return BusinessStructure::query()
             ->withTrashed()
-            ->with(['exerciseVariation', 'chartAccount'])
+            ->with($this->with)
             ->findOrFail($id);
     }
 
@@ -43,7 +54,7 @@ class EloquentBusinessStructureRepository implements BusinessStructureRepository
             'chart_account_id' => $dto->chartAccountId,
         ]);
 
-        return $businessStructure->load(['exerciseVariation', 'chartAccount']);
+        return $businessStructure->load($this->with);
     }
 
     public function update(BusinessStructure $businessStructure, UpdateBusinessStructureDTO $dto): BusinessStructure
@@ -56,7 +67,7 @@ class EloquentBusinessStructureRepository implements BusinessStructureRepository
             'chart_account_id' => $dto->chartAccountId,
         ]);
 
-        return $businessStructure->load(['exerciseVariation', 'chartAccount']);
+        return $businessStructure->load($this->with);
     }
 
     public function delete(BusinessStructure $businessStructure): void
@@ -68,6 +79,6 @@ class EloquentBusinessStructureRepository implements BusinessStructureRepository
     {
         $businessStructure->restore();
 
-        return $businessStructure->load(['exerciseVariation', 'chartAccount']);
+        return $businessStructure->load($this->with);
     }
 }
