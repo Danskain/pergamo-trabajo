@@ -282,6 +282,100 @@ class AccountingSelectOptionsTest extends TestCase
             ->assertJsonPath('data.0.meta.name', 'Caja General');
     }
 
+    public function test_it_returns_key_operations_in_select_options(): void
+    {
+        $moduleId = DB::table('modules')->insertGetId([
+            'name' => 'Accounting',
+            'code' => 'ACC',
+            'description' => 'Modulo contable',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountingNatureId = DB::table('accounting_nature')->insertGetId([
+            'name' => 'Debito',
+            'code' => 'D',
+            'description' => 'Naturaleza debito',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $keyOperationId = DB::table('key_operations')->insertGetId([
+            'code' => 'KO-001',
+            'name' => 'Operacion de Compra',
+            'module_id' => $moduleId,
+            'accounting_nature_id' => $accountingNatureId,
+            'affects_taxes' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $response = $this->getJson('/api/v1/accounting/select-options/key_operations?search=KO-001&limit=10');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.value', $keyOperationId)
+            ->assertJsonPath('data.0.label', 'KO-001 - Operacion de Compra')
+            ->assertJsonPath('data.0.meta.module_id', $moduleId)
+            ->assertJsonPath('data.0.meta.accounting_nature_id', $accountingNatureId)
+            ->assertJsonPath('data.0.meta.affects_taxes', true);
+    }
+
+    public function test_it_returns_accounting_moments_in_select_options(): void
+    {
+        $accountingMomentId = DB::table('accounting_moments')->insertGetId([
+            'name' => 'Causacion',
+            'code' => 'CAU',
+            'description' => 'Momento de causacion',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $response = $this->getJson('/api/v1/accounting/select-options/accounting_moments?search=CAU&limit=10');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.value', $accountingMomentId)
+            ->assertJsonPath('data.0.label', 'CAU - Causacion')
+            ->assertJsonPath('data.0.meta.code', 'CAU')
+            ->assertJsonPath('data.0.meta.name', 'Causacion');
+    }
+
+    public function test_it_returns_accounting_events_in_select_options(): void
+    {
+        $accountingMomentId = DB::table('accounting_moments')->insertGetId([
+            'name' => 'Causacion',
+            'code' => 'CAU',
+            'description' => 'Momento de causacion',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountingEventId = DB::table('accounting_events')->insertGetId([
+            'code' => 'EV-001',
+            'name' => 'Evento de Causacion',
+            'accounting_moment_id' => $accountingMomentId,
+            'origin' => 'manual',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $response = $this->getJson('/api/v1/accounting/select-options/accounting_events?search=EV-001&limit=10');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.value', $accountingEventId)
+            ->assertJsonPath('data.0.label', 'EV-001 - Evento de Causacion')
+            ->assertJsonPath('data.0.meta.accounting_moment_id', $accountingMomentId)
+            ->assertJsonPath('data.0.meta.origin', 'manual');
+    }
+
     public function test_it_validates_catalog_against_allowed_configuration(): void
     {
         $response = $this->getJson('/api/v1/accounting/select-options/not-allowed');

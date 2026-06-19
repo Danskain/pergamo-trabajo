@@ -2,6 +2,8 @@
 
 use App\Modules\Accounting\Http\Controllers\AccountingController;
 use App\Modules\Accounting\Http\Controllers\AccountingAccountController;
+use App\Modules\Accounting\Http\Controllers\AccountingEventController;
+use App\Modules\Accounting\Http\Controllers\AccountingMomentController;
 use App\Modules\Accounting\Http\Controllers\AccountingNatureController;
 use App\Modules\Accounting\Http\Controllers\AccountClassController;
 use App\Modules\Accounting\Http\Controllers\AccountingDocumentController;
@@ -19,6 +21,7 @@ use App\Modules\Accounting\Http\Controllers\DocumentSourceTypeController;
 use App\Modules\Accounting\Http\Controllers\DocumentSourceController;
 use App\Modules\Accounting\Http\Controllers\ExerciseVariationController;
 use App\Modules\Accounting\Http\Controllers\FinancialStatementController;
+use App\Modules\Accounting\Http\Controllers\KeyOperationController;
 use App\Modules\Accounting\Http\Controllers\ModuleController;
 use App\Modules\Accounting\Http\Controllers\ReferenceController;
 use App\Modules\Accounting\Http\Controllers\TypeAccountController;
@@ -80,6 +83,20 @@ Route::prefix(config('accounting.route_prefix', 'api/accounting'))
         Route::put('accounting-natures/{accountingNature}', [AccountingNatureController::class, 'update'])->name('accounting-natures.update');
         Route::delete('accounting-natures/{accountingNature}', [AccountingNatureController::class, 'destroy'])->name('accounting-natures.destroy');
         Route::post('accounting-natures/{accountingNature}/restore', [AccountingNatureController::class, 'restore'])->name('accounting-natures.restore');
+
+        Route::get('accounting-moments', [AccountingMomentController::class, 'index'])->name('accounting-moments.index');
+        Route::post('accounting-moments', [AccountingMomentController::class, 'store'])->name('accounting-moments.store');
+        Route::get('accounting-moments/{accountingMoment}', [AccountingMomentController::class, 'show'])->name('accounting-moments.show');
+        Route::put('accounting-moments/{accountingMoment}', [AccountingMomentController::class, 'update'])->name('accounting-moments.update');
+        Route::delete('accounting-moments/{accountingMoment}', [AccountingMomentController::class, 'destroy'])->name('accounting-moments.destroy');
+        Route::post('accounting-moments/{accountingMoment}/restore', [AccountingMomentController::class, 'restore'])->name('accounting-moments.restore');
+
+        Route::get('accounting-events', [AccountingEventController::class, 'index'])->name('accounting-events.index');
+        Route::post('accounting-events', [AccountingEventController::class, 'store'])->name('accounting-events.store');
+        Route::get('accounting-events/{accountingEvent}', [AccountingEventController::class, 'show'])->name('accounting-events.show');
+        Route::put('accounting-events/{accountingEvent}', [AccountingEventController::class, 'update'])->name('accounting-events.update');
+        Route::delete('accounting-events/{accountingEvent}', [AccountingEventController::class, 'destroy'])->name('accounting-events.destroy');
+        Route::post('accounting-events/{accountingEvent}/restore', [AccountingEventController::class, 'restore'])->name('accounting-events.restore');
 
         Route::get('account-classes', [AccountClassController::class, 'index'])->name('account-classes.index');
         Route::post('account-classes', [AccountClassController::class, 'store'])->name('account-classes.store');
@@ -178,6 +195,13 @@ Route::prefix(config('accounting.route_prefix', 'api/accounting'))
         Route::put('financial-statements/{financialStatement}', [FinancialStatementController::class, 'update'])->name('financial-statements.update');
         Route::delete('financial-statements/{financialStatement}', [FinancialStatementController::class, 'destroy'])->name('financial-statements.destroy');
         Route::post('financial-statements/{financialStatement}/restore', [FinancialStatementController::class, 'restore'])->name('financial-statements.restore');
+
+        Route::get('key-operations', [KeyOperationController::class, 'index'])->name('key-operations.index');
+        Route::post('key-operations', [KeyOperationController::class, 'store'])->name('key-operations.store');
+        Route::get('key-operations/{keyOperation}', [KeyOperationController::class, 'show'])->name('key-operations.show');
+        Route::put('key-operations/{keyOperation}', [KeyOperationController::class, 'update'])->name('key-operations.update');
+        Route::delete('key-operations/{keyOperation}', [KeyOperationController::class, 'destroy'])->name('key-operations.destroy');
+        Route::post('key-operations/{keyOperation}/restore', [KeyOperationController::class, 'restore'])->name('key-operations.restore');
 
         Route::get('references', [ReferenceController::class, 'index'])->name('references.index');
         Route::post('references', [ReferenceController::class, 'store'])->name('references.store');

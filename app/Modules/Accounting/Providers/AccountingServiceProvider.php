@@ -3,6 +3,8 @@
 namespace App\Modules\Accounting\Providers;
 
 use App\Modules\Accounting\Repositories\Contracts\AccountingNatureRepositoryInterface;
+use App\Modules\Accounting\Repositories\Contracts\AccountingEventRepositoryInterface;
+use App\Modules\Accounting\Repositories\Contracts\AccountingMomentRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\AccountClassRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\AccountingStandardRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\AccountingDocumentRepositoryInterface;
@@ -20,12 +22,15 @@ use App\Modules\Accounting\Repositories\Contracts\DocumentSourceTypeRepositoryIn
 use App\Modules\Accounting\Repositories\Contracts\DocumentSourceRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\ExerciseVariationRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\FinancialStatementRepositoryInterface;
+use App\Modules\Accounting\Repositories\Contracts\KeyOperationRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\ModuleRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\ReferenceRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\SelectOptionRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\TypeAccountRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\TypePlanRepositoryInterface;
 use App\Modules\Accounting\Repositories\EloquentAccountingNatureRepository;
+use App\Modules\Accounting\Repositories\EloquentAccountingEventRepository;
+use App\Modules\Accounting\Repositories\EloquentAccountingMomentRepository;
 use App\Modules\Accounting\Repositories\EloquentAccountClassRepository;
 use App\Modules\Accounting\Repositories\EloquentAccountingStandardRepository;
 use App\Modules\Accounting\Repositories\EloquentAccountingDocumentRepository;
@@ -43,6 +48,7 @@ use App\Modules\Accounting\Repositories\EloquentDocumentSourceTypeRepository;
 use App\Modules\Accounting\Repositories\EloquentDocumentSourceRepository;
 use App\Modules\Accounting\Repositories\EloquentExerciseVariationRepository;
 use App\Modules\Accounting\Repositories\EloquentFinancialStatementRepository;
+use App\Modules\Accounting\Repositories\EloquentKeyOperationRepository;
 use App\Modules\Accounting\Repositories\EloquentModuleRepository;
 use App\Modules\Accounting\Repositories\EloquentReferenceRepository;
 use App\Modules\Accounting\Repositories\EloquentSelectOptionRepository;
@@ -59,6 +65,16 @@ class AccountingServiceProvider extends ServiceProvider
         $this->app->bind(
             AccountingNatureRepositoryInterface::class,
             EloquentAccountingNatureRepository::class,
+        );
+
+        $this->app->bind(
+            AccountingEventRepositoryInterface::class,
+            EloquentAccountingEventRepository::class,
+        );
+
+        $this->app->bind(
+            AccountingMomentRepositoryInterface::class,
+            EloquentAccountingMomentRepository::class,
         );
 
         $this->app->bind(
@@ -159,6 +175,11 @@ class AccountingServiceProvider extends ServiceProvider
         $this->app->bind(
             FinancialStatementRepositoryInterface::class,
             EloquentFinancialStatementRepository::class,
+        );
+
+        $this->app->bind(
+            KeyOperationRepositoryInterface::class,
+            EloquentKeyOperationRepository::class,
         );
 
         $this->app->bind(

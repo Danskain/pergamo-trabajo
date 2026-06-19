@@ -3,7 +3,9 @@
 use App\Modules\Accounting\Models\AccountingAccount;
 use App\Modules\Accounting\Models\AccountClass;
 use App\Modules\Accounting\Models\AccountingDocument;
+use App\Modules\Accounting\Models\AccountingEvent;
 use App\Modules\Accounting\Models\AccountingEntryHeader;
+use App\Modules\Accounting\Models\AccountingMoment;
 use App\Modules\Accounting\Models\AccountingGroup;
 use App\Modules\Accounting\Models\AccountingNature;
 use App\Modules\Accounting\Models\AccountingStandard;
@@ -21,6 +23,7 @@ use App\Modules\Accounting\Models\DocumentSourceType;
 use App\Modules\Accounting\Models\Enterprise;
 use App\Modules\Accounting\Models\ExerciseVariation;
 use App\Modules\Accounting\Models\FinancialStatement;
+use App\Modules\Accounting\Models\KeyOperation;
 use App\Modules\Accounting\Models\Module;
 use App\Modules\Accounting\Models\Reference;
 use App\Modules\Accounting\Models\TypeAccount;
@@ -116,6 +119,22 @@ return [
                 'search_fields' => ['code', 'name', 'description'],
                 'order_by' => 'name',
             ],
+            'accounting_moments' => [
+                'model' => AccountingMoment::class,
+                'value_field' => 'id',
+                'label_fields' => ['code', 'name'],
+                'meta_fields' => ['id', 'code', 'name', 'description'],
+                'search_fields' => ['code', 'name', 'description'],
+                'order_by' => 'name',
+            ],
+            'accounting_events' => [
+                'model' => AccountingEvent::class,
+                'value_field' => 'id',
+                'label_fields' => ['code', 'name'],
+                'meta_fields' => ['id', 'code', 'name', 'accounting_moment_id', 'origin'],
+                'search_fields' => ['code', 'name', 'origin'],
+                'order_by' => 'name',
+            ],
             'country' => [
                 'model' => Country::class,
                 'value_field' => 'id',
@@ -179,6 +198,14 @@ return [
                 'label_fields' => ['code', 'name'],
                 'meta_fields' => ['id', 'code', 'name', 'description'],
                 'search_fields' => ['code', 'name', 'description'],
+                'order_by' => 'name',
+            ],
+            'key_operations' => [
+                'model' => KeyOperation::class,
+                'value_field' => 'id',
+                'label_fields' => ['code', 'name'],
+                'meta_fields' => ['id', 'code', 'name', 'module_id', 'accounting_nature_id', 'affects_taxes'],
+                'search_fields' => ['code', 'name'],
                 'order_by' => 'name',
             ],
             'reference' => [
