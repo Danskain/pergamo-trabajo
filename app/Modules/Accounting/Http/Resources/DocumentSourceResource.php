@@ -33,6 +33,12 @@ class DocumentSourceResource extends JsonResource
                     'country_id' => $this->businessStructure->country_id,
                     'coin_id' => $this->businessStructure->coin_id,
                     'enterprise_id' => $this->businessStructure->enterprise_id,
+                    'enterprise' => $this->businessStructure->relationLoaded('enterprise') && $this->businessStructure->enterprise !== null
+                        ? [
+                            'id' => $this->businessStructure->enterprise->id,
+                            'name' => $this->businessStructure->enterprise->name,
+                        ]
+                        : null,
                 ];
             }),
             'module' => $this->whenLoaded('module', function (): array {

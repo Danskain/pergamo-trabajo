@@ -45,6 +45,11 @@ class AccountingEntryHeader extends Model
         return $this->belongsTo(AccountingDocument::class, 'accounting_document_id');
     }
 
+    public function coin(): BelongsTo
+    {
+        return $this->belongsTo(Coin::class, 'coin_id');
+    }
+
     public function documentSource(): BelongsTo
     {
         return $this->belongsTo(DocumentSource::class, 'documents_source_id');

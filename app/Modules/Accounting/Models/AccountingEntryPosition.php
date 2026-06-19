@@ -55,6 +55,11 @@ class AccountingEntryPosition extends Model
         return $this->belongsTo(AccountingAccount::class, 'accounting_accounts_id');
     }
 
+    public function coin(): BelongsTo
+    {
+        return $this->belongsTo(Coin::class, 'coin_id');
+    }
+
     public function costCenter(): BelongsTo
     {
         return $this->belongsTo(CostCenter::class, 'cost_center_id');

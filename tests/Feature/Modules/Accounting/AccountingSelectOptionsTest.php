@@ -189,6 +189,99 @@ class AccountingSelectOptionsTest extends TestCase
             ->assertJsonPath('data.0.label', 'Activo - D - Debito');
     }
 
+    public function test_it_returns_accounting_accounts_using_real_table_columns(): void
+    {
+        $accountingStandardId = DB::table('accounting_standard')->insertGetId([
+            'name' => 'NIIF Plenas',
+            'code' => 'NIIF-FULL',
+            'description' => 'Estandar contable',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $typePlanId = DB::table('types_plans')->insertGetId([
+            'name' => 'General',
+            'code' => 'GEN',
+            'description' => 'Tipo de plan',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $chartAccountId = DB::table('chart_accounts')->insertGetId([
+            'name' => 'Caja',
+            'code' => 'CAJA',
+            'description' => 'Cuenta del plan',
+            'accounting_standard_id' => $accountingStandardId,
+            'types_plan_id' => $typePlanId,
+            'ceco_permission' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountingNatureId = DB::table('accounting_nature')->insertGetId([
+            'name' => 'Debito',
+            'code' => 'D',
+            'description' => 'Naturaleza debito',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountClassId = DB::table('account_class')->insertGetId([
+            'name' => 'Activo',
+            'accounting_nature_id' => $accountingNatureId,
+            'description' => 'Clase activo',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $typeAccountId = DB::table('types_accounts')->insertGetId([
+            'name' => 'Auxiliar',
+            'code' => 'AUX',
+            'description' => 'Tipo de cuenta',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountingGroupId = DB::table('accounting_groups')->insertGetId([
+            'code' => '11',
+            'account_class_id' => $accountClassId,
+            'name' => 'Disponible',
+            'description' => 'Grupo disponible',
+            'account_from' => 1100,
+            'account_to' => 1199,
+            'affects_closing' => true,
+            'affects_financial_statements' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountingAccountId = DB::table('accounting_accounts')->insertGetId([
+            'account' => '110505',
+            'chart_account_id' => $chartAccountId,
+            'name' => 'Caja General',
+            'account_class_id' => $accountClassId,
+            'types_account_id' => $typeAccountId,
+            'accounting_group_id' => $accountingGroupId,
+            'allows_manual_transactions' => true,
+            'associated_account' => false,
+            'accepts_taxes' => false,
+            'foreign_currency' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $response = $this->getJson('/api/v1/accounting/select-options/accounting_accounts?search=1105&limit=10');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.value', $accountingAccountId)
+            ->assertJsonPath('data.0.label', '110505 - Caja General')
+            ->assertJsonPath('data.0.meta.account', '110505')
+            ->assertJsonPath('data.0.meta.name', 'Caja General');
+    }
+
     public function test_it_validates_catalog_against_allowed_configuration(): void
     {
         $response = $this->getJson('/api/v1/accounting/select-options/not-allowed');

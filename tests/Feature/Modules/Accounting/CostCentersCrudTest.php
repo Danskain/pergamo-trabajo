@@ -46,6 +46,7 @@ class CostCentersCrudTest extends TestCase
             ->assertJsonPath('message', 'Centros de costo obtenidos exitosamente')
             ->assertJsonPath('data.data.0.code', 'CC-001')
             ->assertJsonPath('data.data.0.name', 'Administracion')
+            ->assertJsonPath('data.data.0.business_structure.enterprise.name', 'Empresa A')
             ->assertJsonPath('data.data.0.campus.name', 'Sede Norte')
             ->assertJsonPath('data.data.0.cost_center_type.code', 'ADM')
             ->assertJsonPath('data.data.0.cost_center_class.code', 'CLS')
@@ -98,6 +99,7 @@ class CostCentersCrudTest extends TestCase
             ->assertJsonPath('data.code', 'UPD')
             ->assertJsonPath('data.name', 'Actualizado')
             ->assertJsonPath('data.allows_allocation', true)
+            ->assertJsonPath('data.business_structure.enterprise.name', 'Empresa B')
             ->assertJsonPath('data.campus.name', 'Sede Sur')
             ->assertJsonPath('data.cost_center_type.code', 'OPR');
 

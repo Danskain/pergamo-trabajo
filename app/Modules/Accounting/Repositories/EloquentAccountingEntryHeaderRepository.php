@@ -15,7 +15,9 @@ class EloquentAccountingEntryHeaderRepository implements AccountingEntryHeaderRe
      */
     protected array $with = [
         'businessStructure',
+        'businessStructure.enterprise',
         'accountingDocument',
+        'coin',
         'documentSource',
     ];
 

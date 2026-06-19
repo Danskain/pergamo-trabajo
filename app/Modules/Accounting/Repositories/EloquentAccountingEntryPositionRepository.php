@@ -15,9 +15,11 @@ class EloquentAccountingEntryPositionRepository implements AccountingEntryPositi
      */
     protected array $with = [
         'businessStructure',
+        'businessStructure.enterprise',
         'accountingDocument',
         'accountingEntryHeader',
         'accountingAccount',
+        'coin',
         'costCenter',
     ];
 

@@ -46,6 +46,7 @@ class DocumentSourcesCrudTest extends TestCase
             ->assertJsonPath('status', true)
             ->assertJsonPath('message', 'Fuentes de documentos obtenidas exitosamente')
             ->assertJsonPath('data.data.0.number_document_source', 'DOC-001')
+            ->assertJsonPath('data.data.0.business_structure.enterprise.name', 'Empresa Demo')
             ->assertJsonPath('data.data.0.module.code', 'ACC')
             ->assertJsonPath('data.data.0.reference.code', 'FAC')
             ->assertJsonPath('data.meta.current_page', 1)
@@ -96,7 +97,8 @@ class DocumentSourcesCrudTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.number_document_source', 'DOC-UPD')
             ->assertJsonPath('data.total_value', '2222.25')
-            ->assertJsonPath('data.exercise', 2027);
+            ->assertJsonPath('data.exercise', 2027)
+            ->assertJsonPath('data.business_structure.enterprise.name', 'Empresa Demo');
 
         $deleteResponse = $this->deleteJson("/api/v1/accounting/documents-source/{$id}");
 

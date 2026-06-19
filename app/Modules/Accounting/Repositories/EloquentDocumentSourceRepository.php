@@ -15,6 +15,7 @@ class EloquentDocumentSourceRepository implements DocumentSourceRepositoryInterf
      */
     protected array $with = [
         'businessStructure',
+        'businessStructure.enterprise',
         'module',
         'documentSourceType',
         'reference',

@@ -42,6 +42,9 @@ class AccountingEntryHeadersCrudTest extends TestCase
             ->assertJsonPath('status', true)
             ->assertJsonPath('message', 'Encabezados contables obtenidos exitosamente')
             ->assertJsonPath('data.data.0.reference_document', 'REF-001')
+            ->assertJsonPath('data.data.0.business_structure.enterprise.name', 'Empresa Demo')
+            ->assertJsonPath('data.data.0.coin.name', 'Peso Colombiano')
+            ->assertJsonPath('data.data.0.coin.alphabetic_code', 'COP')
             ->assertJsonPath('data.data.0.accounting_document.code', 'COMP')
             ->assertJsonPath('data.data.0.document_source.number_document_source', 'DOC-001')
             ->assertJsonPath('data.meta.current_page', 1)
@@ -84,7 +87,10 @@ class AccountingEntryHeadersCrudTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.reference_document', 'REF-UPD')
             ->assertJsonPath('data.total_debits', '2222.25')
-            ->assertJsonPath('data.accounting_period', 202602);
+            ->assertJsonPath('data.accounting_period', 202602)
+            ->assertJsonPath('data.business_structure.enterprise.name', 'Empresa Demo')
+            ->assertJsonPath('data.coin.name', 'Peso Colombiano')
+            ->assertJsonPath('data.coin.alphabetic_code', 'COP');
 
         $deleteResponse = $this->deleteJson("/api/v1/accounting/accounting-entry-headers/{$id}");
 

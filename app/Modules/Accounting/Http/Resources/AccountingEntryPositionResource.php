@@ -30,6 +30,20 @@ class AccountingEntryPositionResource extends JsonResource
                     'country_id' => $this->businessStructure->country_id,
                     'coin_id' => $this->businessStructure->coin_id,
                     'enterprise_id' => $this->businessStructure->enterprise_id,
+                    'enterprise' => $this->businessStructure->relationLoaded('enterprise') && $this->businessStructure->enterprise !== null
+                        ? [
+                            'id' => $this->businessStructure->enterprise->id,
+                            'name' => $this->businessStructure->enterprise->name,
+                        ]
+                        : null,
+                ];
+            }),
+            'coin' => $this->whenLoaded('coin', function (): array {
+                return [
+                    'id' => $this->coin->id,
+                    'name' => $this->coin->name,
+                    'alphabetic_code' => $this->coin->alphabetic_code,
+                    'numeric_code' => $this->coin->numeric_code,
                 ];
             }),
             'accounting_document' => $this->whenLoaded('accountingDocument', function (): array {

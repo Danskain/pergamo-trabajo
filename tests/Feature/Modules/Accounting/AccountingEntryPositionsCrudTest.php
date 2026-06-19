@@ -43,9 +43,12 @@ class AccountingEntryPositionsCrudTest extends TestCase
             ->assertJsonPath('status', true)
             ->assertJsonPath('message', 'Posiciones de asiento contable obtenidas exitosamente')
             ->assertJsonPath('data.data.0.indicator_dc', 'Debito')
+            ->assertJsonPath('data.data.0.business_structure.enterprise.name', 'Empresa Demo')
             ->assertJsonPath('data.data.0.accounting_document.code', 'COMP')
             ->assertJsonPath('data.data.0.accounting_entry_header.reference_document', 'REF-001')
             ->assertJsonPath('data.data.0.accounting_account.account', '110505')
+            ->assertJsonPath('data.data.0.coin.name', 'Peso Colombiano')
+            ->assertJsonPath('data.data.0.coin.alphabetic_code', 'COP')
             ->assertJsonPath('data.data.0.cost_center.code', 'CC-001')
             ->assertJsonPath('data.meta.current_page', 1)
             ->assertJsonPath('data.meta.per_page', 1)
@@ -106,7 +109,9 @@ class AccountingEntryPositionsCrudTest extends TestCase
             ->assertOk()
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.id', $id)
-            ->assertJsonPath('data.position_text', 'Registro actualizado');
+            ->assertJsonPath('data.position_text', 'Registro actualizado')
+            ->assertJsonPath('data.business_structure.enterprise.name', 'Empresa Demo')
+            ->assertJsonPath('data.coin.name', 'Peso Colombiano');
 
         $this->assertDatabaseHas('accounting_entry_position', [
             'id' => $id,

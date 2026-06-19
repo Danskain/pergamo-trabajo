@@ -15,6 +15,7 @@ class EloquentCostCenterRepository implements CostCenterRepositoryInterface
      */
     protected array $with = [
         'businessStructure',
+        'businessStructure.enterprise',
         'campus',
         'costCenterType',
         'costCenterClass',
