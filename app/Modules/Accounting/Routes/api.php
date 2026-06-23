@@ -3,6 +3,7 @@
 use App\Modules\Accounting\Http\Controllers\AccountingController;
 use App\Modules\Accounting\Http\Controllers\AccountingAccountController;
 use App\Modules\Accounting\Http\Controllers\AccountingEventController;
+use App\Modules\Accounting\Http\Controllers\AccountingSchemeController;
 use App\Modules\Accounting\Http\Controllers\AccountingMomentController;
 use App\Modules\Accounting\Http\Controllers\AccountingNatureController;
 use App\Modules\Accounting\Http\Controllers\AccountClassController;
@@ -97,6 +98,13 @@ Route::prefix(config('accounting.route_prefix', 'api/accounting'))
         Route::put('accounting-events/{accountingEvent}', [AccountingEventController::class, 'update'])->name('accounting-events.update');
         Route::delete('accounting-events/{accountingEvent}', [AccountingEventController::class, 'destroy'])->name('accounting-events.destroy');
         Route::post('accounting-events/{accountingEvent}/restore', [AccountingEventController::class, 'restore'])->name('accounting-events.restore');
+
+        Route::get('accounting-schemes', [AccountingSchemeController::class, 'index'])->name('accounting-schemes.index');
+        Route::post('accounting-schemes', [AccountingSchemeController::class, 'store'])->name('accounting-schemes.store');
+        Route::get('accounting-schemes/{accountingScheme}', [AccountingSchemeController::class, 'show'])->name('accounting-schemes.show');
+        Route::put('accounting-schemes/{accountingScheme}', [AccountingSchemeController::class, 'update'])->name('accounting-schemes.update');
+        Route::delete('accounting-schemes/{accountingScheme}', [AccountingSchemeController::class, 'destroy'])->name('accounting-schemes.destroy');
+        Route::post('accounting-schemes/{accountingScheme}/restore', [AccountingSchemeController::class, 'restore'])->name('accounting-schemes.restore');
 
         Route::get('account-classes', [AccountClassController::class, 'index'])->name('account-classes.index');
         Route::post('account-classes', [AccountClassController::class, 'store'])->name('account-classes.store');

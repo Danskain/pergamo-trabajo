@@ -6,6 +6,7 @@ use App\Modules\Accounting\Models\AccountingDocument;
 use App\Modules\Accounting\Models\AccountingEvent;
 use App\Modules\Accounting\Models\AccountingEntryHeader;
 use App\Modules\Accounting\Models\AccountingMoment;
+use App\Modules\Accounting\Models\AccountingScheme;
 use App\Modules\Accounting\Models\AccountingGroup;
 use App\Modules\Accounting\Models\AccountingNature;
 use App\Modules\Accounting\Models\AccountingStandard;
@@ -134,6 +135,26 @@ return [
                 'meta_fields' => ['id', 'code', 'name', 'accounting_moment_id', 'origin'],
                 'search_fields' => ['code', 'name', 'origin'],
                 'order_by' => 'name',
+            ],
+            'accounting_schemes' => [
+                'model' => AccountingScheme::class,
+                'value_field' => 'id',
+                'label_fields' => ['assessment_class'],
+                'meta_fields' => [
+                    'id',
+                    'business_structure_id',
+                    'chart_account_id',
+                    'assessment_class',
+                    'type_movement_id',
+                    'accounting_event_id',
+                    'key_operation_id',
+                    'accounting_account_id',
+                    'accounting_nature_id',
+                    'require_coce',
+                ],
+                'search_fields' => ['assessment_class'],
+                'order_by' => 'assessment_class',
+                'enriched_with' => ['accountingEvent', 'keyOperation', 'accountingAccount'],
             ],
             'country' => [
                 'model' => Country::class,

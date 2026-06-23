@@ -376,6 +376,46 @@ class AccountingSelectOptionsTest extends TestCase
             ->assertJsonPath('data.0.meta.origin', 'manual');
     }
 
+    public function test_it_returns_accounting_schemes_in_select_options(): void
+    {
+        $dependencies = $this->createAccountingSchemeDependencies();
+
+        $accountingSchemeId = DB::table('accounting_schemes')->insertGetId([
+            'business_structure_id' => $dependencies['business_structure_id'],
+            'chart_account_id' => $dependencies['chart_account_id'],
+            'assessment_class' => 'Inventarios',
+            'type_movement_id' => $dependencies['type_movement_id'],
+            'accounting_event_id' => $dependencies['accounting_event_id'],
+            'key_operation_id' => $dependencies['key_operation_id'],
+            'accounting_account_id' => $dependencies['accounting_account_id'],
+            'accounting_nature_id' => $dependencies['accounting_nature_id'],
+            'require_coce' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $response = $this->getJson('/api/v1/accounting/select-options/accounting_schemes?search=Inventarios&limit=10');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.value', $accountingSchemeId)
+            ->assertJsonPath('data.0.label', 'Inventarios')
+            ->assertJsonPath('data.0.meta.assessment_class', 'Inventarios')
+            ->assertJsonPath('data.0.meta.accounting_event_id', $dependencies['accounting_event_id'])
+            ->assertJsonPath('data.0.meta.key_operation_id', $dependencies['key_operation_id'])
+            ->assertJsonPath('data.0.meta.require_coce', true);
+
+        $enrichedResponse = $this->getJson('/api/v1/accounting/select-options/accounting_schemes?search=Inventarios&limit=10&enriched_labels=true');
+
+        $enrichedResponse
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('meta.enriched_labels', true)
+            ->assertJsonPath('data.0.label', 'Inventarios - EV-001 - KO-001 - 110505');
+    }
+
     public function test_it_validates_catalog_against_allowed_configuration(): void
     {
         $response = $this->getJson('/api/v1/accounting/select-options/not-allowed');
@@ -556,5 +596,133 @@ class AccountingSelectOptionsTest extends TestCase
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function createAccountingSchemeDependencies(): array
+    {
+        $businessStructureId = $this->createBusinessStructureDependencies();
+        $chartAccountId = DB::table('business_structure')
+            ->where('id', $businessStructureId)
+            ->value('chart_account_id');
+
+        $accountingNatureId = DB::table('accounting_nature')->insertGetId([
+            'name' => 'Debito',
+            'code' => 'D',
+            'description' => 'Naturaleza debito',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountClassId = DB::table('account_class')->insertGetId([
+            'name' => 'Activo',
+            'accounting_nature_id' => $accountingNatureId,
+            'description' => 'Clase activo',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $typeAccountId = DB::table('types_accounts')->insertGetId([
+            'name' => 'Auxiliar',
+            'code' => 'AUX',
+            'description' => 'Tipo de cuenta',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountingGroupId = DB::table('accounting_groups')->insertGetId([
+            'code' => '11',
+            'account_class_id' => $accountClassId,
+            'name' => 'Disponible',
+            'description' => 'Grupo disponible',
+            'account_from' => 1100,
+            'account_to' => 1199,
+            'affects_closing' => true,
+            'affects_financial_statements' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountingAccountId = DB::table('accounting_accounts')->insertGetId([
+            'account' => '110505',
+            'chart_account_id' => $chartAccountId,
+            'name' => 'Caja General',
+            'account_class_id' => $accountClassId,
+            'types_account_id' => $typeAccountId,
+            'accounting_group_id' => $accountingGroupId,
+            'allows_manual_transactions' => true,
+            'associated_account' => false,
+            'accepts_taxes' => false,
+            'foreign_currency' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountingMomentId = DB::table('accounting_moments')->insertGetId([
+            'name' => 'Causacion',
+            'code' => 'CAU',
+            'description' => 'Momento de causacion',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $accountingEventId = DB::table('accounting_events')->insertGetId([
+            'code' => 'EV-001',
+            'name' => 'Evento de Causacion',
+            'accounting_moment_id' => $accountingMomentId,
+            'origin' => 'manual',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $moduleId = DB::table('modules')->insertGetId([
+            'name' => 'Accounting',
+            'code' => 'ACC',
+            'description' => 'Modulo contable',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $keyOperationId = DB::table('key_operations')->insertGetId([
+            'code' => 'KO-001',
+            'name' => 'Operacion de Compra',
+            'module_id' => $moduleId,
+            'accounting_nature_id' => $accountingNatureId,
+            'affects_taxes' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $typeMovementId = DB::table('product_inventory_movements')->insertGetId([
+            'batch_id' => 1,
+            'concept_id' => 10,
+            'control_book' => true,
+            'date' => '2026-06-22',
+            'invoice_id' => null,
+            'pharmacy_stock_id' => null,
+            'prescription_number' => null,
+            'quantity' => 12,
+            'record_number' => 'ACT-001',
+            'remarks' => 'Movimiento base',
+            'user_id' => 1,
+            'pharmacy_product_request_id' => null,
+            'inventory_count_id' => null,
+            'movement_dispatch_id' => null,
+            'request_inventory_id' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return [
+            'business_structure_id' => $businessStructureId,
+            'chart_account_id' => $chartAccountId,
+            'type_movement_id' => $typeMovementId,
+            'accounting_event_id' => $accountingEventId,
+            'key_operation_id' => $keyOperationId,
+            'accounting_account_id' => $accountingAccountId,
+            'accounting_nature_id' => $accountingNatureId,
+        ];
     }
 }

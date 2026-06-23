@@ -4,6 +4,7 @@ namespace App\Modules\Accounting\Repositories;
 
 use App\Modules\Accounting\DTOs\GetSelectOptionsDTO;
 use App\Modules\Accounting\Models\AccountClass;
+use App\Modules\Accounting\Models\AccountingScheme;
 use App\Modules\Accounting\Models\BusinessStructure;
 use App\Modules\Accounting\Models\DocumentSource;
 use App\Modules\Accounting\Repositories\Contracts\SelectOptionRepositoryInterface;
@@ -110,10 +111,23 @@ class EloquentSelectOptionRepository implements SelectOptionRepositoryInterface
     {
         return match ($catalogKey) {
             'account_class' => $item instanceof AccountClass ? $this->buildAccountClassLabel($item) : null,
+            'accounting_schemes' => $item instanceof AccountingScheme ? $this->buildAccountingSchemeLabel($item) : null,
             'business_structure' => $item instanceof BusinessStructure ? $this->buildBusinessStructureLabel($item) : null,
             'documents_source' => $item instanceof DocumentSource ? $this->buildDocumentSourceLabel($item) : null,
             default => null,
         };
+    }
+
+    private function buildAccountingSchemeLabel(AccountingScheme $accountingScheme): ?string
+    {
+        $parts = collect([
+            $accountingScheme->assessment_class,
+            $accountingScheme->accountingEvent?->code,
+            $accountingScheme->keyOperation?->code,
+            $accountingScheme->accountingAccount?->account,
+        ])->filter()->values();
+
+        return $parts->isNotEmpty() ? $parts->implode(' - ') : null;
     }
 
     private function buildAccountClassLabel(AccountClass $accountClass): ?string

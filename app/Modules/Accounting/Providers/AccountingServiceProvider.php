@@ -3,6 +3,7 @@
 namespace App\Modules\Accounting\Providers;
 
 use App\Modules\Accounting\Repositories\Contracts\AccountingNatureRepositoryInterface;
+use App\Modules\Accounting\Repositories\Contracts\AccountingSchemeRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\AccountingEventRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\AccountingMomentRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\AccountClassRepositoryInterface;
@@ -29,6 +30,7 @@ use App\Modules\Accounting\Repositories\Contracts\SelectOptionRepositoryInterfac
 use App\Modules\Accounting\Repositories\Contracts\TypeAccountRepositoryInterface;
 use App\Modules\Accounting\Repositories\Contracts\TypePlanRepositoryInterface;
 use App\Modules\Accounting\Repositories\EloquentAccountingNatureRepository;
+use App\Modules\Accounting\Repositories\EloquentAccountingSchemeRepository;
 use App\Modules\Accounting\Repositories\EloquentAccountingEventRepository;
 use App\Modules\Accounting\Repositories\EloquentAccountingMomentRepository;
 use App\Modules\Accounting\Repositories\EloquentAccountClassRepository;
@@ -65,6 +67,11 @@ class AccountingServiceProvider extends ServiceProvider
         $this->app->bind(
             AccountingNatureRepositoryInterface::class,
             EloquentAccountingNatureRepository::class,
+        );
+
+        $this->app->bind(
+            AccountingSchemeRepositoryInterface::class,
+            EloquentAccountingSchemeRepository::class,
         );
 
         $this->app->bind(
